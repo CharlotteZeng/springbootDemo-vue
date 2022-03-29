@@ -26,13 +26,15 @@
                 class="rememberme"
             >记住密码</el-checkbox>
             <el-form-item style="width:100%;">
-                <el-button type="primary" style="width:100%;" @click="handleSubmit" :loading="logining">登录</el-button>
+                <el-button type="primary" style="width:100%;" @click="handleSubmit" v-loading="logining" element-loading-text="登陆中...">登录</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script>
+import Utils from "@/utils/utils"
+import {postRequest} from '@/utils/utils' 
 export default {
     
     data(){
@@ -54,11 +56,25 @@ export default {
         handleSubmit(event){
             this.$refs.ruleForm2.validate((valid) => {
                 if(valid){
+                    // var enPassword = Utils.encrypt(this.ruleForm2.password,"ZGd06elLPt2O0eUgF5bGCQ==");
+                    // console.log(enPassword)
+                    // this.logining = true;
+                    let params = {uname:this.ruleForm2.username,password:this.ruleForm2.password};
 
-                    this.logining = true;
-                    let params = {username:this.ruleForm2.username,password:this.ruleForm2.password};
-                    this.postHttp1(params);
-
+                    postRequest("http://localhost:8080/user/login",params).then(response =>{
+                        if(response.status === 200){
+                            this.logining = false;
+                                    
+                            sessionStorage.setItem('user', this.ruleForm2);
+                            this.$router.push({path: '/console'});
+                        }else{
+                            this.logining = false;
+                            this.$alert('username or password wrong!', 'info', {
+                                        confirmButtonText: 'ok'
+                                    })
+                        }
+                    });
+                    // this.postHttp1()
                    /*if(status==200){
 
                            this.logining = false;
@@ -77,7 +93,7 @@ export default {
             })
         },
         
-        postHttp1(params){
+        postHttp1(){
             axios({
                 method:'POST',
                 url:'http://localhost:8080/user/login',
@@ -93,6 +109,7 @@ export default {
                     sessionStorage.setItem('user', this.ruleForm2);
                     this.$router.push({path: '/console'});
                 }else{
+
                     this.logining = false;
                     this.$alert('username or password wrong!', 'info', {
                                 confirmButtonText: 'ok'

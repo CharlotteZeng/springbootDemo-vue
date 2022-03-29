@@ -33,16 +33,34 @@ export const postRequest = (url, params) => {
     url: url,
     data:params,
     // 请求参数预处理
-    // transformRequest: [function (data) {
-    //   let ret = '{'
-    //   for (let it in data) {
-    //     ret += "'"+encodeURIComponent(it) + "':" + encodeURIComponent(data[it]) + ','
-    //   }
-    //   ret+='}';
-    //   return ret
-    // }],
+     // transformRequest: [function (data) {
+     //   let ret = '{'
+     //   for (let it in data) {
+     //     ret += "'"+encodeURIComponent(it) + "':" + encodeURIComponent(data[it]) + ','
+     //   }
+     //   ret+='}';
+     //   return ret
+     // }],
     headers: {
       'Content-Type': 'application/json;charset=UTF-8;'
     }
   });
 }
+
+// 添加一个请求拦截器
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;　　//这里经常搭配token使用，将token值配置到tokenkey中，将tokenkey放在请求头中　　config.headers['Authorization'] = token;　　
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+
+// 添加一个响应拦截器
+axios.interceptors.response.use(function (response) {
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Do something with response error
+    return Promise.reject(error);
+  });
